@@ -1,0 +1,173 @@
+McLorenExp(double, int):
+        push    {r4, r5, fp, lr}; пуш данных на стек
+        add     fp, sp, #12 ; fp = sp + 12 (fp - frame pointer)
+        sub     sp, sp, #40 ; sp = sp - 40(sp - stack pointer)        
+        str     r0, [fp, #-44] ;  из регистра r0 загружаем данные по адресу fp - 44
+        str     r1, [fp, #-40] ;  из регистра r1 загружаем данные по адресу fp - 40
+
+				;fp-44 и fp-40 , вероятно, аргумент функции типа double
+				; fp-48 - аргумент функции типа int 
+
+        str     r2, [fp, #-48] ;  из регистра r2 загружаем данные по адресу fp - 48
+        mov     r3, #0 ; в регистр r3 помещаем 0
+        mov     r4, #0 ; в регистр r4 помещаем 0
+        str     r3, [fp, #-20] ; из регистра r3 выгружаем данные по адресу fp - 20 
+        str     r4, [fp, #-16] ; из регистра r4 выгружаем данные по адресу fp - 16(double result = 0.0)
+        mov     r3, #0 ; в регистр r3 помещаем 0
+        ldr     r4, .L5 ; взять данные по метке .L5 и положить в r4
+        str     r3, [fp, #-28] ; присвоение 
+        str     r4, [fp, #-24] ; element = 1.0
+        mov     r3, #0
+        str     r3, [fp, #-32] ; по адресу [fp, #-32] (счётчик цикла) помещаем 0 через r3
+.L3:				;метка на начало цикла for
+        ldr     r2, [fp, #-32] ; 
+        ldr     r3, [fp, #-48] ; 
+        cmp     r2, r3	; i(счётчик цикла) < N(аргумент функции) ?
+        bge     .L2		; переход на метку .L2 если больше 
+        sub     r3, fp, #28 ; r3 = fp - 28 
+        ldmia   r3, {r2-r3} ; обращение к стеку  
+        sub     r1, fp, #20 ; r1 = fp - 20 
+        ldmia   r1, {r0-r1} ; обращение к стеку  
+        bl      __aeabi_dadd ; вызов функции для подсчёта  result + element
+        mov     r3, r0 ; из r0 -> r3
+        mov     r4, r1 ; из r4 -> r1
+        str     r3, [fp, #-20] ; из r3 -> fp - 20
+        str     r4, [fp, #-16] ; из r4 -> fp - 16 выгрузка результата в result
+
+        sub     r3, fp, #44 ; r3 = fp - 44()
+        ldmia   r3, {r2-r3}
+        sub     r1, fp, #28 ; r1 = fp - 28 ()
+        ldmia   r1, {r0-r1}
+        bl      __aeabi_dmul ; операция умножения (element * x)
+        mov     r3, r0
+        mov     r4, r1
+        mov     r5, r4
+        mov     r4, r3
+        ldr     r3, [fp, #-32] ; счётчик цикла i -> r3
+        add     r3, r3, #1 ; (i + 1)
+        mov     r0, r3 (i + 1) -> r0 
+        bl      __aeabi_i2d ; приведение к типу double
+        mov     r2, r0 ; жонглирование 
+        mov     r3, r1 ; регистрами
+        mov     r0, r4 ;
+        mov     r1, r5 ;
+        bl      __aeabi_ddiv; операция деления (element * x / (double)(i + 1))
+        mov     r3, r0
+        mov     r4, r1
+        str     r3, [fp, #-28] ; выгрузка результата 
+        str     r4, [fp, #-24] ; в переменную result 
+
+        ldr     r3, [fp, #-32] ; тут 
+        add     r3, r3, #1     ;инкремент 
+        str     r3, [fp, #-32] ; счётчика цикла
+        b       .L3 ; безусловный переход 
+.L2:
+        sub     r4, fp, #20 ; выгрузка результата 
+        ldmia   r4, {r3-r4} ; для возврата из функции 
+        mov     r0, r3      ;
+        mov     r1, r4      ;
+        sub     sp, fp, #12 ; восстановление состояния указателя на стек
+        pop     {r4, r5, fp, pc} ; вытягиваем из стека значения регистров и frame pointer и
+                                 ; prog counter - указатель на следующую команду 
+.L5:
+        .word   1072693248
+.LC0:
+        .ascii  "wb\000"
+.LC1:
+        .ascii  "out.txt\000"
+.LC2:
+        .ascii  "%lf\000"
+main:
+        push    {r4, r5, fp, lr} ; пуш на стек 
+        add     fp, sp, #12 ; fp = sp + 12
+        sub     sp, sp, #16 ; sp = sp - 16
+        ldr     r0, .L13 ; выгружаем аргумент для malloc в r0
+        bl      malloc ; вызов malloc
+        mov     r3, r0 ; r3 = r0
+        str     r3, [fp, #-24]; помещаем результат malloc на стек (перем-ая arr)
+        mov     r3, #0 ; r3 = 0
+        str     r3, [fp, #-16] ; обнуляем переменную на стеке по адресу fp - 16 ( i = 0)
+.L9:
+        ldr     r3, [fp, #-16] ; выгрузка значения переменной счётчика цикла -> r3
+        ldr     r2, .L13+4 ; смещение адреса для перемещения по массиву 
+        cmp     r3, r2 
+        bgt     .L8 ; условный переход 
+        
+        ldr     r0, [fp, #-16] ; 
+        bl      __aeabi_i2d ; приведение к типу double
+        mov     r3, r0 ;
+        mov     r4, r1 ; чудесные превращения 
+        mov     r2, r3 ; регистров 
+        mov     r3, r4 ;
+        mov     r0, #0 ;
+        ldr     r1, .L13+8 ; 
+        bl      __aeabi_ddiv ; операция деления (1.0 / (double) i)
+        mov     r3, r0 
+        mov     r4, r1 
+        mov     r0, r3 
+        mov     r1, r4 
+        ldr     r3, [fp, #-16] ; счётчик цикла -> r3
+        lsl     r3, r3, #3 ; логический сдвиг влево 
+        ldr     r2, [fp, #-24]
+        add     r5, r2, r3
+        mov     r2, #1000 ; r2 = 1000
+        bl      McLorenExp(double, int) ; вызов функции McLorenExp
+        mov     r3, r0
+        mov     r4, r1
+        stm     r5, {r3-r4} ; что-то куда-то выгружаем 
+
+
+        ldr     r3, [fp, #-16] ; 
+        add     r3, r3, #1     ; инкремент счётчика цикла for  
+        str     r3, [fp, #-16] ;
+        b       .L9
+.L8:
+        ldr     r1, .L13+12 ; выгружаем константные строки 
+        ldr     r0, .L13+16  ; для передачи в качестве аргументов fopen
+        bl      fopen ; вызов fopen 
+        mov     r3, r0 
+        str     r3, [fp, #-28] ; по адресу fp - 28 выгружаем результат fopen ( перем - ая out)
+
+        mov     r3, #0 ; обнуление 
+        str     r3, [fp, #-20] ; счётчика цикла 
+.L11:
+        ldr     r3, [fp, #-20] ; 
+        ldr     r2, .L13+4 ; смещение адреса для перемещения по массиву 
+        cmp     r3, r2 
+        bgt     .L10 ; условный переход в цикле for ()
+
+        ldr     r3, [fp, #-20]
+        lsl     r3, r3, #3 ; логический свдиг влево
+        ldr     r2, [fp, #-24]
+        add     r3, r2, r3 ; арифметика указателей для перемещения по массиву
+        ldmia   r3, {r3-r4}
+        mov     r2, r3
+        mov     r3, r4
+        ldr     r1, .L13+20 ; константная строка в r1 для функции fprintf()
+        ldr     r0, [fp, #-28]
+        bl      fprintf
+   
+   ; далее до .L10 -  инкремент счётчика цикла 
+        ldr     r3, [fp, #-20]
+        add     r3, r3, #1
+        str     r3, [fp, #-20]
+        b       .L11
+    ;
+.L10:
+        ldr     r0, [fp, #-24] ; arr -> r0 
+        bl      free ; free(arr)
+        ldr     r0, [fp, #-28] ; out -> r0
+        bl      fclose ; fclode(out)
+        mov     r3, #0 ; r3 = 0
+        mov     r0, r3 ; r0 = r3
+        sub     sp, fp, #12 ; возврат состояния sp 
+        pop     {r4, r5, fp, pc} ; вытягиваем данные со стека
+
+
+.L13:
+        .word   51200000
+        .word   6399999
+        .word   1072693248
+        .word   .LC0
+        .word   .LC1
+        .word   .LC2

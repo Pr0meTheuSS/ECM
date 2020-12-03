@@ -1,0 +1,125 @@
+McLorenExp(double, int):
+        movapd  xmm3, xmm0
+        test    edi, edi
+        jle     .L4
+        movsd   xmm0, QWORD PTR .LC0[rip]
+        xor     eax, eax
+        pxor    xmm1, xmm1
+.L3:
+        addsd   xmm1, xmm0
+        mulsd   xmm0, xmm3
+        pxor    xmm2, xmm2
+        add     eax, 1
+        cvtsi2sd        xmm2, eax
+        divsd   xmm0, xmm2
+        cmp     eax, edi
+        jne     .L3
+        movapd  xmm0, xmm1
+        ret
+.L4:
+        pxor    xmm1, xmm1
+        movapd  xmm0, xmm1
+        ret
+.LC6:
+        .string "wb"
+.LC7:
+        .string "out.txt"
+.LC8:
+        .string "%lf"
+main:
+        push    r13
+        mov     edi, 51200000
+        push    r12
+        push    rbp
+        push    rbx
+        sub     rsp, 8
+        call    malloc
+        movdqa  xmm10, XMMWORD PTR .LC2[rip]
+        movdqa  xmm11, XMMWORD PTR .LC4[rip]
+        mov     r13, rax
+        mov     rbx, rax
+        lea     rbp, [rax+51200000]
+        mov     rdx, rax
+        movapd  xmm9, XMMWORD PTR .LC3[rip]
+        movdqa  xmm8, XMMWORD PTR .LC5[rip]
+.L9:
+        movdqa  xmm0, xmm10
+        movapd  xmm7, xmm9
+        movapd  xmm6, xmm9
+        mov     eax, 1000
+        cvtdq2pd        xmm1, xmm0
+        pxor    xmm4, xmm4
+        pshufd  xmm0, xmm0, 238
+        pxor    xmm2, xmm2
+        cvtdq2pd        xmm0, xmm0
+        divpd   xmm7, xmm1
+        paddd   xmm10, xmm11
+        movapd  xmm1, xmm9
+        movapd  xmm5, xmm4
+        divpd   xmm6, xmm0
+        movapd  xmm0, xmm9
+.L8:
+        addpd   xmm5, xmm0
+        mulpd   xmm0, xmm7
+        addpd   xmm4, xmm1
+        mulpd   xmm1, xmm6
+        paddd   xmm2, xmm8
+        cvtdq2pd        xmm3, xmm2
+        divpd   xmm0, xmm3
+        pshufd  xmm3, xmm2, 238
+        cvtdq2pd        xmm3, xmm3
+        divpd   xmm1, xmm3
+        sub     eax, 1
+        jne     .L8
+        movups  XMMWORD PTR [rdx], xmm5
+        add     rdx, 32
+        movups  XMMWORD PTR [rdx-16], xmm4
+        cmp     rbp, rdx
+        jne     .L9
+        mov     esi, OFFSET FLAT:.LC6
+        mov     edi, OFFSET FLAT:.LC7
+        call    fopen
+        mov     r12, rax
+.L10:
+        movsd   xmm0, QWORD PTR [rbx]
+        mov     esi, OFFSET FLAT:.LC8
+        mov     rdi, r12
+        add     rbx, 8
+        mov     eax, 1
+        call    fprintf
+        cmp     rbp, rbx
+        jne     .L10
+        mov     rdi, r13
+        call    free
+        mov     rdi, r12
+        call    fclose
+        add     rsp, 8
+        xor     eax, eax
+        pop     rbx
+        pop     rbp
+        pop     r12
+        pop     r13
+        ret
+.LC0:
+        .long   0
+        .long   1072693248
+.LC2:
+        .long   0
+        .long   1
+        .long   2
+        .long   3
+.LC3:
+        .long   0
+        .long   1072693248
+        .long   0
+        .long   1072693248
+.LC4:
+        .long   4
+        .long   4
+        .long   4
+        .long   4
+.LC5:
+        .long   1
+        .long   1
+        .long   1
+        .long   1

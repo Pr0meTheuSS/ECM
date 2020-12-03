@@ -1,0 +1,90 @@
+McLorenExp(double, int):
+        movapd  xmm3, xmm0			; xmm0->xmm3
+        test    edi, edi			;поразрядное & и установка значений бит в регистре eflags
+        jle     .L4				;переход , если меньше или равно
+        movsd   xmm0, QWORD PTR .LC0[rip]	; 1.0 -> xmm0
+        xor     eax, eax			;обнуление eax xor-ом
+        pxor    xmm1, xmm1			;аналогично - xmm1
+.L3:						
+        addsd   xmm1, xmm0			;сложение xmm1 и xmm0 (xmm1== xmm0)
+        mulsd   xmm0, xmm3			;перемножение element * x
+        pxor    xmm2, xmm2			;обнуление xor-ом
+        add     eax, 1				;выражение i + 1
+        cvtsi2sd        xmm2, eax		;приведение типа
+        divsd   xmm0, xmm2			;операция деления
+        cmp     eax, edi			;сравнение счетчика цикла и аргумента N функции McLorenExp
+        jne     .L3				;если не равны - переход
+        movapd  xmm0, xmm1			;xmm1->xmm0
+        ret					;возврат управления вызывающей функции 
+.L4:
+        pxor    xmm1, xmm1			;обнуление xor-ом
+        movapd  xmm0, xmm1			;xmm1->xmm0
+        ret					;возврат управления вызывающей функции 
+.LC2:
+        .string "wb"
+.LC3:
+        .string "out.txt"
+.LC4:
+        .string "%lf"
+main:
+        push    r13				;помещаем на стек к13
+        mov     edi, 51200000			;5120000 -> edi для передачи в качестве аргумента
+        push    r12				;помещаем на стек к12
+        push    rbp				;помещаем на стек rbp
+        push    rbx				;помещаем на стек rbx
+        sub     rsp, 8				;уменьшаем rsp для локальных переменных
+        call    malloc				;вызов функции malloc
+        movsd   xmm4, QWORD PTR .LC0[rip]	;0 -> xmm4
+        xor     edx, edx			;обнуляем edx
+        pxor    xmm5, xmm5			;обнуляем xmm5
+        mov     rbp, rax			;rax->rbp
+.L9:
+        pxor    xmm0, xmm0			;обнуляем xmm0
+        movapd  xmm3, xmm4			;xmm4->xmm3
+        movapd  xmm1, xmm5			;xmm5->xmm1
+        xor     eax, eax			;eax = 0
+        cvtsi2sd        xmm0, edx		;приведение типа
+        divsd   xmm3, xmm0			;деление 
+        movapd  xmm0, xmm4			;xmm0 <- xmm4
+.L8:
+        addsd   xmm1, xmm0			;сложение xmm1+= xmm0
+        mulsd   xmm0, xmm3			;xmm0*=xmm3
+        pxor    xmm2, xmm2			;xmm = 0.0
+        add     eax, 1				;eax+=1
+        cvtsi2sd        xmm2, eax		;приведение типа
+        divsd   xmm0, xmm2			;xmm0/= xmm2
+        cmp     eax, 1000			;сравнение eax и 1000
+        jne     .L8				;переход если не равны
+        movsd   QWORD PTR [rbp+0+rdx*8], xmm1	;помещаем вычесленное значение в ячейку массива с некоторым смещение от начала массива arr
+        add     rdx, 1				;инкремент счетчика цикла
+        cmp     rdx, 6400000			;сравнение счетчика и 6400000
+        jne     .L9				;переход если не равны
+        mov     esi, OFFSET FLAT:.LC2		;константные строки
+        mov     edi, OFFSET FLAT:.LC3		;в регистры esi  и edi
+        mov     rbx, rbp			;для передачи в качестве аргументов функции fopen
+        call    fopen				;вызов fopen
+        lea     r13, [rbp+51200000]		;подсчет нового смещения 
+        mov     r12, rax			;r12 <- rax
+.L10:
+        movsd   xmm0, QWORD PTR [rbx]		;помещение 
+        mov     esi, OFFSET FLAT:.LC4		;аргументов в регистры
+        mov     rdi, r12			;для передачи в функцию fprintf
+        add     rbx, 8				;смещение для перехода к след элементу массива
+        mov     eax, 1				;инкремент счетчика
+        call    fprintf				;вызов функции fprintf
+        cmp     rbx, r13			;сравнение
+        jne     .L10				;
+        mov     rdi, rbp			;rbp->rdi передача аргумента для функции free
+        call    free				;вызов функции free
+        mov     rdi, r12			;12-> rdi
+        call    fclose				;вызов функции fclose
+        add     rsp, 8				;восстановление регистра rsp
+        xor     eax, eax			;обнуление eax
+        pop     rbx				;вытаскиваем
+        pop     rbp				;из
+        pop     r12				;стека 
+        pop     r13				;всё что туда клали 
+        ret					;передача управления вызываюшему потоку
+.LC0:
+        .long   0
+        .long   1072693248
