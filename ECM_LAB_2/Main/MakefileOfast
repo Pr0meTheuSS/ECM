@@ -1,0 +1,9 @@
+Compiler=gcc
+ArchitectureFlags=-mtune=generic -march=x86-64
+OptimizeFlags=-Ofast
+Src=main.cpp CalcLn.cpp
+TargetName=lab1with$(OptimizeFlags)
+TargetFolder=Executable
+all:
+	$(Compiler) $(ArchitectureFlags) $(Src) -o $(TargetFolder)/$(TargetName) $(OptimizeFlags)
+
