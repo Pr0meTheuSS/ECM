@@ -1,0 +1,12 @@
+Compiler=gcc
+Arch=64
+ArchitectureFlags=-m$(Arch)
+DebugFlags=-g3 -fverbose-asm -masm=att
+OptimizeFlags=-Ofast
+Src=main.c CalcLn.c
+TargetName=x$(Arch)$(OptimizeFlags)
+TargetFolder=Executable
+LinkFlags=-lm
+all:
+	$(Compiler) $(DebugFlags) $(ArchitectureFlags) $(Src) -o $(TargetFolder)/$(TargetName) $(OptimizeFlags) $(LinkFlags)
+

@@ -1,0 +1,49 @@
+            ;-- main:
+            ; DATA XREF from entry0 @ 0x10f8(r)
+┌ 178: int dbg.main (int argc, char **argv, char **envp);
+│           ; var int64_t canary @ rbp-0x8
+│           ; var size_t const seriesMembersAmount @ rbp-0x10
+│           ; var double val @ rbp-0x18
+│           0x000011c9      f30f1efa       endbr64                     ; int main();
+│           0x000011cd      55             push rbp
+│           0x000011ce      4889e5         mov rbp, rsp
+│           0x000011d1      4883ec20       sub rsp, 0x20
+│           0x000011d5      64488b042528.  mov rax, qword fs:[0x28]
+│           0x000011de      488945f8       mov qword [canary], rax
+│           0x000011e2      31c0           xor eax, eax
+│           0x000011e4      48c745f06400.  mov qword [seriesMembersAmount], 0x64 ; 'd'
+│           0x000011ec      660fefc0       pxor xmm0, xmm0
+│           0x000011f0      f20f1145e8     movsd qword [val], xmm0
+│           0x000011f5      488d45e8       lea rax, [val]
+│           0x000011f9      4889c6         mov rsi, rax
+│           0x000011fc      488d05010e00.  lea rax, [0x00002004]       ; "%lf"
+│           0x00001203      4889c7         mov rdi, rax                ; const char *format
+│           0x00001206      b800000000     mov eax, 0
+│           0x0000120b      e8b0feffff     call sym.imp.__isoc99_scanf ; int scanf(const char *format)
+│           0x00001210      83f801         cmp eax, 1
+│       ┌─< 0x00001213      740f           je 0x1224
+│       │   0x00001215      488d05ec0d00.  lea rax, str.Invalid_input._n ; 0x2008 ; "Invalid input.\n"
+│       │   0x0000121c      4889c7         mov rdi, rax                ; const char *s
+│       │   0x0000121f      e88cfeffff     call sym.imp.perror         ; void perror(const char *s)
+│       │   ; CODE XREF from dbg.main @ 0x1213(x)
+│       └─> 0x00001224      488b45e8       mov rax, qword [val]
+│           0x00001228      488b55f0       mov rdx, qword [seriesMembersAmount]
+│           0x0000122c      4889d7         mov rdi, rdx                ; int64_t arg1
+│           0x0000122f      66480f6ec0     movq xmm0, rax
+│           0x00001234      e842000000     call dbg.CalcLn
+│           0x00001239      66480f7ec2     movq rdx, xmm0
+│           0x0000123e      488b45e8       mov rax, qword [val]
+│           0x00001242      66480f6eca     movq xmm1, rdx
+│           0x00001247      66480f6ec0     movq xmm0, rax
+│           0x0000124c      488d05c50d00.  lea rax, str._nln__lf__lf_n ; 0x2018 ; "\nln(%lf)=%lf\n"
+│           0x00001253      4889c7         mov rdi, rax                ; const char *format
+│           0x00001256      b802000000     mov eax, 2
+│           0x0000125b      e840feffff     call sym.imp.printf         ; int printf(const char *format)
+│           0x00001260      b800000000     mov eax, 0
+│           0x00001265      488b55f8       mov rdx, qword [canary]
+│           0x00001269      64482b142528.  sub rdx, qword fs:[0x28]
+│       ┌─< 0x00001272      7405           je 0x1279
+│       │   0x00001274      e817feffff     call sym.imp.__stack_chk_fail ; void __stack_chk_fail(void)
+│       │   ; CODE XREF from dbg.main @ 0x1272(x)
+│       └─> 0x00001279      c9             leave
+└           0x0000127a      c3             ret

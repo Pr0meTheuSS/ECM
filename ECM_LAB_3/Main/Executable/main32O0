@@ -1,0 +1,68 @@
+            ;-- main:
+┌ 190: int dbg.main (char **argv);
+│           ; var int32_t var_8h @ ebp-0x8
+│           ; var int32_t var_ch @ ebp-0xc
+│           ; var double val @ ebp-0x18
+│           ; var size_t const seriesMembersAmount @ ebp-0x1c
+│           ; arg char **argv @ esp+0x44
+│           0x000011dd      8d4c2404       lea ecx, [argv]             ; int main();
+│           0x000011e1      83e4f0         and esp, 0xfffffff0
+│           0x000011e4      ff71fc         push dword [ecx - 4]
+│           0x000011e7      55             push ebp
+│           0x000011e8      89e5           mov ebp, esp
+│           0x000011ea      53             push ebx
+│           0x000011eb      51             push ecx
+│           0x000011ec      83ec20         sub esp, 0x20
+│           0x000011ef      e8ecfeffff     call sym.__x86.get_pc_thunk.bx
+│           0x000011f4      81c3d42d0000   add ebx, 0x2dd4
+│           0x000011fa      65a114000000   mov eax, dword gs:[0x14]
+│           0x00001200      8945f4         mov dword [var_ch], eax
+│           0x00001203      31c0           xor eax, eax
+│           0x00001205      c745e4640000.  mov dword [seriesMembersAmount], 0x64 ; 'd'
+│           0x0000120c      d9ee           fldz
+│           0x0000120e      dd5de8         fstp qword [ebp - 0x18]
+│           0x00001211      83ec08         sub esp, 8
+│           0x00001214      8d45e8         lea eax, [val]
+│           0x00001217      50             push eax
+│           0x00001218      8d8340e0ffff   lea eax, [ebx - 0x1fc0]
+│           0x0000121e      50             push eax                    ; const char *format
+│           0x0000121f      e86cfeffff     call sym.imp.__isoc99_scanf ; int scanf(const char *format)
+│           0x00001224      83c410         add esp, 0x10
+│           0x00001227      83f801         cmp eax, 1
+│       ┌─< 0x0000122a      7412           je 0x123e
+│       │   0x0000122c      83ec0c         sub esp, 0xc
+│       │   0x0000122f      8d8344e0ffff   lea eax, [ebx - 0x1fbc]
+│       │   0x00001235      50             push eax                    ; const char *s
+│       │   0x00001236      e835feffff     call sym.imp.perror         ; void perror(const char *s)
+│       │   0x0000123b      83c410         add esp, 0x10
+│       │   ; CODE XREF from dbg.main @ 0x122a(x)
+│       └─> 0x0000123e      dd45e8         fld qword [ebp - 0x18]
+│           0x00001241      83ec04         sub esp, 4
+│           0x00001244      ff75e4         push dword [seriesMembersAmount] ; int32_t arg_10h
+│           0x00001247      8d6424f8       lea esp, [esp - 8]
+│           0x0000124b      dd1c24         fstp qword [esp]
+│           0x0000124e      e848000000     call dbg.CalcLn
+│           0x00001253      83c410         add esp, 0x10
+│           0x00001256      dd45e8         fld qword [ebp - 0x18]
+│           0x00001259      d9c9           fxch st(1)
+│           0x0000125b      83ec0c         sub esp, 0xc
+│           0x0000125e      8d6424f8       lea esp, [esp - 8]
+│           0x00001262      dd1c24         fstp qword [esp]
+│           0x00001265      8d6424f8       lea esp, [esp - 8]
+│           0x00001269      dd1c24         fstp qword [esp]
+│           0x0000126c      8d8354e0ffff   lea eax, [ebx - 0x1fac]
+│           0x00001272      50             push eax                    ; const char *format
+│           0x00001273      e8d8fdffff     call sym.imp.printf         ; int printf(const char *format)
+│           0x00001278      83c420         add esp, 0x20
+│           0x0000127b      b800000000     mov eax, 0
+│           0x00001280      8b55f4         mov edx, dword [var_ch]
+│           0x00001283      652b15140000.  sub edx, dword gs:[0x14]
+│       ┌─< 0x0000128a      7405           je 0x1291
+│       │   0x0000128c      e8ef000000     call sym.__stack_chk_fail_local
+│       │   ; CODE XREF from dbg.main @ 0x128a(x)
+│       └─> 0x00001291      8d65f8         lea esp, [var_8h]
+│           0x00001294      59             pop ecx
+│           0x00001295      5b             pop ebx
+│           0x00001296      5d             pop ebp
+│           0x00001297      8d61fc         lea esp, [ecx - 4]
+└           0x0000129a      c3             ret

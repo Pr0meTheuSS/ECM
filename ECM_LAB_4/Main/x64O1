@@ -1,0 +1,12 @@
+Compiler=aarch64-linux-gnu-gcc
+
+
+DebugFlags=-g3 -fverbose-asm
+OptimizeFlags=-O1
+Src=main.c CalcLn.c
+TargetName=x$(Arch)$(OptimizeFlags)
+TargetFolder=Executable
+LinkFlags=-lm
+all:
+	$(Compiler) $(DebugFlags)  $(Src) -o $(TargetFolder)/$(TargetName) $(OptimizeFlags)  $(LinkFlags)
+
